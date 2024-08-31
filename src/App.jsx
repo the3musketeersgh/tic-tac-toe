@@ -1,16 +1,25 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import Player from './components/Player'
 import GameBoard from './components/GameBoard'
+import Log from './components/Log'
 
 function App() {
- 
-  const [currentPlayer, setCurrentPlayer] = useState("X");
+ const [gameTurns, setGameTurns] = useState([]);
+  const [activePlayer, setCurrentPlayer] = useState("X");
 
-  function handleSelectSquare(){
-    setCurrentPlayer((currentPlayer)=> currentPlayer === "X" ? "O" : "X");
+  function handleSelectSquare(rowIndex, colIndex){
+    setCurrentPlayer((curActivePlayer)=> curActivePlayer === "X" ? "O" : "X");
+   
+    setGameTurns(prevTurns => {
+       let currentPlayer = "X";
+    
+    if(prevTurns.length > 0 && prevTurns[0].player === "X"){
+      currentPlayer = "O";
+    }
+      const updatedTurns = [{square: {row: rowIndex, col: colIndex}, player: currentPlayer}, ...prevTurns];
+    return updatedTurns;
+    });
   }
 
 
@@ -20,13 +29,14 @@ function App() {
 <div id="game-container"> 
 
 <ol id="players" className='highlight-player'>
-<Player initialName="Player 1" symbol="X" isActive={currentPlayer === "X"}/>
-<Player initialName="Player 2" symbol="O" isActive={currentPlayer === "O"}/>
+<Player initialName="Player 1" symbol="X" isActive={activePlayer === "X"}/>
+<Player initialName="Player 2" symbol="O" isActive={activePlayer === "O"}/>
 </ol>
 
 
-<GameBoard onSelectSquare={handleSelectSquare} activePlayerSymbol={currentPlayer}/>
+<GameBoard onSelectSquare={handleSelectSquare} turns={gameTurns}/>
 </div>
+<Log turns={gameTurns}/>
 
   </main>
   )
